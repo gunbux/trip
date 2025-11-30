@@ -95,9 +95,9 @@ async def oidc_login(
     if not decoded:
         raise HTTPException(status_code=401, detail="Invalid ID token")
 
-    username = decoded.get("preferred_username")
+    username = (decoded.get("preferred_username") or decoded.get("email") or decoded.get("sub"))
     if not username:
-        raise HTTPException(status_code=401, detail="OIDC login failed, preferred_username missing")
+        raise HTTPException(status_code=401, detail="OIDC login failed, username missing")
 
     user = session.get(User, username)
     if not user:
